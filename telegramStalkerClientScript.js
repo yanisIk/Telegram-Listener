@@ -77,6 +77,16 @@ function getNewMessages(peerID) {
 	return newPeerMessages;
 }
 
+var ALL_COIN_PAIRS = ["BTC-NEO", "BTC-OMG"];
+function getCoinPairsInMessage(message) {
+	var coinPairsInMessage = [];
+	ALL_COIN_PAIRS.forEach(pairName => {
+		if (!message.includes(pairName)) return;
+		coinPairsInMessage.push(pairName);
+	})
+	return coinPairsInMessage;
+}
+
 var CHECK_INTERVAL = 1 * 1000; //3s
 function startChecking() {
 	console.log("------ Extracting PeerIds...");
@@ -88,7 +98,10 @@ function startChecking() {
 	setInterval(() => {
 		peerIds.forEach(peerID => {
 			var newMessages = getNewMessages(peerID);
-			if (newMessages.length) console.log("------ NEW MESSAGES", newMessages);
+			if (!newMessages.length) return;
+			var coinPairsInMessage = getCoinPairsInMessage(newMessages.join(" "));
+			if (!coinPairsInMessage.length) return;
+			console.log("------ COIN PAIRS DETECTED", coinPairsInMessage);
 		})
 	}, CHECK_INTERVAL);
 }
